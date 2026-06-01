@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import LenisProvider from '@/components/ui/LenisProvider'
+import RequireAdminAuth from '@/components/RequireAdminAuth'
 import Home from './pages/Home'
 import Admin from './pages/Admin'
 import AdminLogin from './pages/AdminLogin'
@@ -9,7 +10,14 @@ export default function App() {
     <LenisProvider>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route
+          path="/admin"
+          element={
+            <RequireAdminAuth>
+              <Admin />
+            </RequireAdminAuth>
+          }
+        />
         <Route path="/admin/login" element={<AdminLogin />} />
       </Routes>
     </LenisProvider>
