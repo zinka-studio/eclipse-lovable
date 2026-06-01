@@ -6,8 +6,6 @@ import { getLenis } from '@/lib/lenis';
 
 const SECTION_HEIGHT = 260;
 const FADE_OVER = 2.4;        // match useFrameSequence SCROLL_TRAVEL so animation covers full video
-const TEXT_ANIM_START = 0.20; // text starts fading at 20% scroll progress
-const TEXT_ANIM_END   = 0.43; // text fully gone at 43% progress
 
 interface HeroProps { onReserve: () => void; ready?: boolean; hideLb?: boolean; }
 
@@ -51,14 +49,14 @@ export default function Hero({ onReserve, ready = true, hideLb = false }: HeroPr
         scrollHintRef.current.style.opacity = String(Math.max(0, 1 - rawProgress * 8));
       }
 
-      // Text: fades to 0 + scales to 5 — tied to smoothed frame progress
+      // Text: fades to 0 + scales up — tied 1:1 to smoothed frame progress
       if (textRef.current) {
-        if (progress >= TEXT_ANIM_START) {
-          const tp = Math.min(1, (progress - TEXT_ANIM_START) / (TEXT_ANIM_END - TEXT_ANIM_START));
+        if (progress > 0) {
+          const tp = Math.min(1, progress);
           textRef.current.style.transition = 'none';
           textRef.current.style.opacity = String(Math.max(0, 1 - tp));
           textRef.current.style.transform = `scale(${1 + tp * 4})`;
-          textRef.current.style.pointerEvents = 'none';
+          textRef.current.style.pointerEvents = tp >= 1 ? 'none' : '';
         } else {
           textRef.current.style.transition = '';
           textRef.current.style.opacity = '';
