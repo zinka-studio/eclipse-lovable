@@ -1,5 +1,6 @@
 import { useState, Suspense } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { setAdminAuthed } from '../../components/RequireAdminAuth'
 
 function LoginForm() {
   const [password, setPassword] = useState('')
