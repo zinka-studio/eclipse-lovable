@@ -1804,4 +1804,4 @@ body:has(section#food *:hover) #cursor-ring { border-color: rgba(255,255,255,0.3
 }
 
 /* ── Hide Lovable badge ── */
-lovable-badge { display: none !important; }
+#lovable-badge { display: none !important; }
