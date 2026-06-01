@@ -3,11 +3,13 @@ import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { gsap, ScrollTrigger } from '@/lib/gsap-config';
 
+const FRAME_COUNT = 49;
+
 interface Drink {
   id: string;
   name: string;
   description: string;
-  video: string;
+  frames: string; // base path for pre-extracted WebP frames
 }
 
 const DRINKS: Drink[] = [
@@ -16,64 +18,38 @@ const DRINKS: Drink[] = [
     name: 'Tropical Sunset',
     description:
       'A vibrant tropical highball layered with citrus and passionfruit notes, served over crystal-clear ice and finished with fresh mint, dried orange, and pink grapefruit.',
-    video: '/media/Tropical Sunset.mp4',
+    frames: '/frames/tropical-sunset',
   },
   {
     id: 'emerald-cooler',
     name: 'Emerald Cooler',
     description:
       'A crisp gin-based refresher with cucumber essence and elderflower, served over a frozen cucumber sphere and finished with a spray of lime.',
-    video: '/media/Emerald Cooler.mp4',
+    frames: '/frames/emerald-cooler',
   },
   {
     id: 'dragon-berry',
     name: 'Dragon Berry',
     description:
       'A bold, exotic blend of dragonfruit and wild berries, infused with a hint of hibiscus and finished with a sparkling lime zest.',
-    video: '/media/Dragon Berry.mp4',
+    frames: '/frames/dragon-berry',
   },
 ];
 
-// 12 fps is plenty for scroll-scrubbed playback and cuts frame count ~20% vs 15
-const CAPTURE_FPS = 12;
-// Capture at half resolution — GPU upscales to canvas size invisibly, 4× less memory
-const CAPTURE_W   = 960;
-const CAPTURE_H   = 540;
+type FrameBank = HTMLImageElement[];
 
-type FrameBank = ImageBitmap[];
-
-async function extractFrames(videoSrc: string): Promise<FrameBank> {
+function loadFrames(basePath: string): Promise<FrameBank> {
   return new Promise((resolve) => {
-    const video = document.createElement('video');
-    video.muted = true;
-    video.playsInline = true;
-    video.crossOrigin = 'anonymous';
-
-    video.addEventListener('loadedmetadata', async () => {
-      const total  = Math.ceil(video.duration * CAPTURE_FPS);
-      const frames: FrameBank = [];
-
-      for (let i = 0; i < total; i++) {
-        video.currentTime = i / CAPTURE_FPS;
-        await new Promise<void>(r =>
-          video.addEventListener('seeked', () => r(), { once: true })
-        );
-        try {
-          // Resize during decode — no intermediate canvas needed
-          frames.push(await createImageBitmap(video, {
-            resizeWidth:   CAPTURE_W,
-            resizeHeight:  CAPTURE_H,
-            resizeQuality: 'medium',
-          }));
-        } catch { /* skip bad frame */ }
-        if (i % 5 === 4) await new Promise(r => setTimeout(r, 0));
-      }
-
-      resolve(frames);
-    }, { once: true });
-
-    video.src = videoSrc;
-    video.load();
+    const images: HTMLImageElement[] = new Array(FRAME_COUNT);
+    let loaded = 0;
+    const onLoad = () => { if (++loaded === FRAME_COUNT) resolve(images); };
+    for (let i = 0; i < FRAME_COUNT; i++) {
+      const img = new Image();
+      img.onload = onLoad;
+      img.onerror = onLoad; // count errors so we always resolve
+      img.src = `${basePath}/frame_${String(i + 1).padStart(4, '0')}.webp`;
+      images[i] = img;
+    }
   });
 }
 
@@ -131,21 +107,20 @@ export default function Elixir({ onReserve }: { onReserve?: () => void }) {
     ctx.globalCompositeOperation = 'source-over';
   };
 
-  // ── extract frames ─────────────────────────────────────────────────────────
+  // ── load pre-extracted frames ───────────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
-      const first = await extractFrames(DRINKS[0].video);
+      const first = await loadFrames(DRINKS[0].frames);
       if (cancelled) return;
       framebanksRef.current[0] = first;
-      drawFrame(0, 1); // start at last frame — full glass
+      drawFrame(0, 1);
       setReady(true);
 
-      // Extract remaining drinks in parallel — roughly halves background load time
       const [bank1, bank2] = await Promise.all([
-        extractFrames(DRINKS[1].video),
-        extractFrames(DRINKS[2].video),
+        loadFrames(DRINKS[1].frames),
+        loadFrames(DRINKS[2].frames),
       ]);
       if (!cancelled) {
         framebanksRef.current[1] = bank1;
@@ -153,10 +128,7 @@ export default function Elixir({ onReserve }: { onReserve?: () => void }) {
       }
     })();
 
-    return () => {
-      cancelled = true;
-      framebanksRef.current.forEach(bank => bank?.forEach(b => b.close()));
-    };
+    return () => { cancelled = true; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── ScrollTrigger pin + scrub ──────────────────────────────────────────────
