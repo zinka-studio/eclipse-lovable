@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { SiteContent, MenuItem, Reservation } from '@/lib/supabase'
+import { clearAdminAuthed } from '../../components/RequireAdminAuth'
 
 function Ico({ d, size = 14 }: { d: string; size?: number }) {
   return (
