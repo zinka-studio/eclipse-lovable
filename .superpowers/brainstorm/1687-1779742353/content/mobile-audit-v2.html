@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mobile Layout Audit v2</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d0d12; color: #e8e8e8; padding: 32px 24px 80px; }
+  h1 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .page-sub { font-size: 13px; color: #888; margin-bottom: 40px; line-height: 1.5; }
+  .section-title { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #F4C485; margin-bottom: 16px; margin-top: 44px; }
+  .comparison { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; }
+  .phone { width: 190px; flex-shrink: 0; border: 1.5px solid #333; border-radius: 28px; overflow: hidden; background: #000; }
+  .phone-notch { width: 80px; height: 18px; background: #000; border-radius: 0 0 10px 10px; margin: 0 auto; }
+  .phone-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #555; text-align: center; padding: 8px 0 4px; }
+  .vs-arrow { font-size: 18px; color: #444; align-self: center; flex-shrink: 0; }
+  .issue-list { display: flex; flex-direction: column; gap: 7px; flex: 1; min-width: 200px; padding-top: 4px; }
+  .issue { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; line-height: 1.55; }
+  .ico { flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; margin-top: 1px; }
+  .ico.fix  { background: rgba(255,80,80,0.12); color: #ff6060; }
+  .ico.warn { background: rgba(255,170,0,0.13); color: #FFaa00; }
+  .ico.ok   { background: rgba(80,220,120,0.11); color: #50dc78; }
+  hr { border: none; border-top: 1px solid #1e1e26; margin: 44px 0 0; }
+  code { background: rgba(244,196,133,0.1); color: #F4C485; font-size: 10.5px; padding: 1px 4px; border-radius: 3px; }
+  .note { font-size: 12px; color: #777; line-height: 1.6; margin-top: 8px; padding: 10px 14px; background: rgba(255,255,255,0.03); border-left: 2px solid #333; border-radius: 0 4px 4px 0; }
+
+  /* ───────────────── PHONE MOCKUPS ───────────────── */
+
+  /* HERO */
+  .h-cur { background: #050507; min-height: 290px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 14px; gap: 0; position: relative; }
+  .h-cur .canvas-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 60%, rgba(20,15,35,0.8), #050507); }
+  .h-cur .upper { font-size: 14px; font-weight: 700; color: #f9f9f9; position: relative; z-index: 1; }
+  .h-cur .lower { font-size: 46px; font-weight: 700; color: #f9f9f9; line-height: 0.88; position: relative; z-index: 1; margin-bottom: 10px; }
+  .h-cur .tag { font-size: 7.5px; color: rgba(255,255,255,0.6); text-align: center; margin-bottom: 12px; line-height: 1.6; position: relative; z-index: 1; }
+  .h-cur .btns { display: flex; gap: 6px; position: relative; z-index: 1; }
+  .h-cur .btn { font-size: 6px; padding: 7px 10px; border: 1px solid rgba(255,255,255,0.35); color: #fff; background: rgba(255,255,255,0.08); letter-spacing: 0.08em; white-space: nowrap; }
+  .h-cur .hint { font-size: 6.5px; color: rgba(255,255,255,0.25); margin-top: 14px; position: relative; z-index: 1; letter-spacing: 0.25em; }
+
+  .h-new { background: #050507; min-height: 290px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 14px; gap: 0; position: relative; }
+  .h-new .canvas-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 60%, rgba(20,15,35,0.8), #050507); }
+  .h-new .upper { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7); position: relative; z-index: 1; letter-spacing: 0.06em; margin-bottom: 2px; }
+  .h-new .lower { font-size: 52px; font-weight: 700; color: #f9f9f9; line-height: 0.88; position: relative; z-index: 1; margin-bottom: 10px; }
+  .h-new .rule { width: 1px; height: 22px; background: linear-gradient(to bottom, rgba(255,255,255,0.25), transparent); margin: 0 auto 10px; position: relative; z-index: 1; }
+  .h-new .tag { font-size: 7.5px; color: rgba(255,255,255,0.65); text-align: center; margin-bottom: 14px; line-height: 1.65; position: relative; z-index: 1; max-width: 150px; }
+  .h-new .btns { display: flex; flex-direction: column; gap: 7px; width: 160px; position: relative; z-index: 1; }
+  .h-new .btn { font-size: 7px; padding: 10px 0; border: 1px solid rgba(255,255,255,0.35); color: #fff; background: rgba(255,255,255,0.07); letter-spacing: 0.1em; text-align: center; }
+  .h-new .btn.primary { border-color: rgba(244,196,133,0.5); color: #F4C485; background: rgba(244,196,133,0.07); }
+  .h-new .hint { font-size: 6.5px; color: rgba(255,255,255,0.25); margin-top: 14px; position: relative; z-index: 1; letter-spacing: 0.25em; }
+
+  /* ELIXIR */
+  .e-cur { background: #010103; min-height: 310px; position: relative; overflow: hidden; }
+  .e-cur .video-fill { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 80% at 50% 50%, rgba(20,50,35,0.6), #010103); }
+  .e-cur .overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.65) 100%); }
+  .e-cur .grid { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; padding: 20px 14px; align-items: center; gap: 12px; }
+  .e-cur .left { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+  .e-cur .kicker { font-size: 7px; color: rgba(255,255,255,0.55); }
+  .e-cur .title { font-size: 18px; font-weight: 700; color: #fff; line-height: 1.1; }
+  .e-cur .title span { color: #F4C485; }
+  .e-cur .right { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; }
+  .e-cur .di { opacity: 0.2; text-align: right; }
+  .e-cur .di.active { opacity: 1; }
+  .e-cur .dn { font-size: 11px; font-weight: 700; color: #fff; white-space: nowrap; }
+  .e-cur .dd { font-size: 7px; color: rgba(255,255,255,0.6); line-height: 1.4; max-width: 90px; }
+
+  .e-new { background: #010103; min-height: 310px; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+  .e-new .video-fill { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 80% at 50% 50%, rgba(20,50,35,0.6), #010103); }
+  .e-new .top-grad { position: absolute; top: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent); }
+  .e-new .bot-grad { position: absolute; bottom: 0; left: 0; right: 0; height: 140px; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); }
+  .e-new .top-left { position: absolute; top: 16px; left: 14px; z-index: 2; }
+  .e-new .kicker { font-size: 7px; color: rgba(255,255,255,0.5); margin-bottom: 2px; }
+  .e-new .title { font-size: 20px; font-weight: 700; color: #fff; line-height: 1.05; }
+  .e-new .title span { color: #F4C485; }
+  .e-new .bottom-panel { position: absolute; bottom: 0; left: 0; right: 0; z-index: 2; padding: 0 14px 16px; }
+  .e-new .active-name { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .e-new .active-desc { font-size: 7.5px; color: rgba(255,255,255,0.7); line-height: 1.55; margin-bottom: 10px; max-width: 200px; }
+  .e-new .dots-row { display: flex; gap: 5px; align-items: center; }
+  .e-new .dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.25); }
+  .e-new .dot.active { background: #F4C485; width: 16px; border-radius: 3px; }
+  .e-new .scroll-hint { font-size: 6px; color: rgba(255,255,255,0.3); letter-spacing: 0.2em; text-transform: uppercase; margin-left: auto; }
+
+  /* SECRET CREATION */
+  .sc-cur { background: #000; min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 14px; gap: 10px; position: relative; overflow: hidden; }
+  .sc-cur .img-placeholder { position: absolute; width: 34px; height: 34px; top: 50%; left: 50%; transform: translate(-50%,-50%); background: radial-gradient(ellipse, rgba(200,160,80,0.2), transparent 70%); border-radius: 50%; }
+  .sc-cur .eyebrow { font-size: 6.5px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.25); position: relative; z-index: 1; }
+  .sc-cur .title { font-size: 22px; font-weight: 700; color: #fff; text-align: center; line-height: 1.1; position: relative; z-index: 1; }
+  .sc-cur .body { font-size: 7px; color: rgba(255,255,255,0.65); text-align: center; line-height: 1.7; max-width: 160px; position: relative; z-index: 1; }
+  .sc-cur .status { font-size: 7px; color: rgba(255,255,255,0.45); letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  .sc-new { background: #000; min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 14px; gap: 10px; position: relative; overflow: hidden; }
+  .sc-new .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 65% 55% at 50% 50%, transparent 30%, rgba(0,0,0,0.7) 100%); }
+  .sc-new .img-circle { width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(ellipse, rgba(200,160,80,0.18), rgba(20,15,5,0.7) 70%); border: 1px solid rgba(244,196,133,0.18); display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; flex-shrink: 0; }
+  .sc-new .img-inner { width: 50px; height: 50px; border-radius: 50%; background: radial-gradient(ellipse, rgba(200,160,80,0.2), transparent 70%); }
+  .sc-new .ring-outer { position: absolute; inset: -14px; border-radius: 50%; border: 1px dashed rgba(255,255,255,0.06); }
+  .sc-new .eyebrow { font-size: 6.5px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.25); position: relative; z-index: 1; }
+  .sc-new .title { font-size: 24px; font-weight: 700; color: #fff; text-align: center; line-height: 1.1; position: relative; z-index: 1; }
+  .sc-new .body { font-size: 7.5px; color: rgba(255,255,255,0.65); text-align: center; line-height: 1.7; max-width: 165px; position: relative; z-index: 1; }
+  .sc-new .status { font-size: 7px; color: rgba(255,255,255,0.45); letter-spacing: 0.2em; text-transform: uppercase; position: relative; z-index: 1; }
+
+  /* FOOD */
+  .fd-cur { background: #000; min-height: 320px; padding: 18px 14px; display: flex; flex-direction: column; gap: 14px; }
+  .fd-cur .umami { font-size: 50px; font-weight: 700; color: #F4C485; line-height: 1; }
+  .fd-cur .ad { font-size: 15px; font-weight: 700; color: #fff; }
+  .fd-cur .body { font-size: 7px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+  .fd-cur .nav { display: flex; align-items: center; gap: 6px; }
+  .fd-cur .arr { width: 18px; height: 26px; border: 1px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 9px; color: rgba(255,255,255,0.35); }
+  .fd-cur .di { flex: 1; }
+  .fd-cur .dn { font-size: 12px; font-weight: 700; color: #fff; }
+  .fd-cur .dd { font-size: 7px; color: rgba(255,255,255,0.5); }
+  .fd-cur .img-wrap { width: 130px; height: 130px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); background: radial-gradient(ellipse, rgba(80,60,40,0.3), #060606); margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+  .fd-cur .img-ph { font-size: 6.5px; color: rgba(255,255,255,0.18); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .fd-new { background: #000; min-height: 320px; display: flex; flex-direction: column; }
+  .fd-new .img-top { width: 100%; height: 140px; background: radial-gradient(ellipse 90% 80% at 50% 60%, rgba(70,55,35,0.4), #060606); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
+  .fd-new .img-circle { width: 96px; height: 96px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); background: radial-gradient(ellipse, rgba(90,70,45,0.35), #080808); display: flex; align-items: center; justify-content: center; }
+  .fd-new .img-ph { font-size: 6.5px; color: rgba(255,255,255,0.18); letter-spacing: 0.1em; text-transform: uppercase; }
+  .fd-new .pill { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 4px 12px; font-size: 7px; color: rgba(255,255,255,0.65); white-space: nowrap; }
+  .fd-new .text { padding: 14px 14px 16px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .fd-new .umami { font-size: 50px; font-weight: 700; color: #F4C485; line-height: 1; margin-bottom: -2px; }
+  .fd-new .ad { font-size: 15px; font-weight: 700; color: #fff; }
+  .fd-new .body { font-size: 7px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+  .fd-new .nav { display: flex; align-items: center; gap: 8px; }
+  .fd-new .arr { width: 20px; height: 28px; border: 1px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 9px; color: rgba(255,255,255,0.4); border-radius: 2px; }
+  .fd-new .di { flex: 1; }
+  .fd-new .dn { font-size: 12px; font-weight: 700; color: #fff; }
+  .fd-new .dd { font-size: 7px; color: rgba(255,255,255,0.5); }
+
+  /* MENU */
+  .mn-cur { background: #000; min-height: 260px; padding: 16px 0; display: flex; flex-direction: column; }
+  .mn-cur .header { padding: 0 14px 10px; }
+  .mn-cur .title { font-size: 20px; font-weight: 700; color: #fff; }
+  .mn-cur .title span { color: #F4C485; }
+  .mn-cur .tabs-wrap { display: flex; gap: 14px; padding: 0 14px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); overflow: hidden; }
+  .mn-cur .tab { font-size: 7px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.45); padding: 8px 0; white-space: nowrap; }
+  .mn-cur .tab.active { color: #fff; border-bottom: 1px solid #F4C485; }
+  .mn-cur .items { padding: 0 14px; display: flex; flex-direction: column; }
+  .mn-cur .item { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; gap: 2px; }
+  .mn-cur .irow { display: flex; align-items: baseline; gap: 4px; }
+  .mn-cur .iname { font-size: 10px; color: rgba(255,255,255,0.85); flex: 1; }
+  .mn-cur .idots { flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+  .mn-cur .iprice { font-size: 9px; color: rgba(255,255,255,0.35); }
+  .mn-cur .idesc { font-size: 7px; color: rgba(255,255,255,0.2); font-style: italic; }
+
+  .mn-new { background: #000; min-height: 260px; padding: 16px 0; display: flex; flex-direction: column; }
+  .mn-new .header { padding: 0 14px 12px; }
+  .mn-new .title { font-size: 22px; font-weight: 700; color: #fff; }
+  .mn-new .title span { color: #F4C485; }
+  .mn-new .tabs-wrap { display: flex; gap: 16px; padding: 0 14px 0; overflow: hidden; }
+  .mn-new .tab { font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.4); padding: 10px 0 8px; white-space: nowrap; min-height: 44px; display: flex; align-items: flex-end; }
+  .mn-new .tab.active { color: #fff; border-bottom: 1.5px solid #F4C485; }
+  .mn-new .fade-hint { width: 32px; background: linear-gradient(to right, transparent, #000); flex-shrink: 0; }
+  .mn-new .items { padding: 0 14px; display: flex; flex-direction: column; }
+  .mn-new .item { padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; gap: 2px; }
+  .mn-new .irow { display: flex; align-items: baseline; gap: 4px; }
+  .mn-new .iname { font-size: 11px; color: rgba(255,255,255,0.88); flex: 1; }
+  .mn-new .idots { flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+  .mn-new .iprice { font-size: 10px; color: rgba(255,255,255,0.38); }
+  .mn-new .idesc { font-size: 7.5px; color: rgba(255,255,255,0.22); font-style: italic; }
+
+  /* FOOTER */
+  .ft-cur { background: #000; min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 14px; gap: 10px; position: relative; overflow: hidden; }
+  .ft-cur .canvas-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 60%, rgba(20,15,35,0.7), #000); }
+  .ft-cur .blur-layer { position: absolute; inset: 0; background: rgba(0,0,0,0.4); }
+  .ft-cur .pre { font-size: 6px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.2); position: relative; z-index: 1; }
+  .ft-cur .wordmark { font-size: 44px; font-weight: 700; color: #fff; letter-spacing: 0.06em; line-height: 0.9; position: relative; z-index: 1; }
+  .ft-cur .info { display: flex; flex-direction: column; gap: 8px; align-items: center; position: relative; z-index: 1; }
+  .ft-cur .info-row { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .ft-cur .ilabel { font-size: 5.5px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+  .ft-cur .ival { font-size: 8px; color: #fff; }
+  .ft-cur .cta-btn { font-size: 7px; padding: 8px 18px; border: 1px solid rgba(255,255,255,0.35); color: #fff; background: transparent; letter-spacing: 0.1em; position: relative; z-index: 1; }
+  .ft-cur .bottom { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); width: 100%; margin-top: 4px; }
+  .ft-cur .copy { font-size: 6px; color: rgba(255,255,255,0.5); }
+  .ft-cur .legal { display: flex; gap: 12px; }
+  .ft-cur .ll { font-size: 6px; color: rgba(255,255,255,0.4); }
+  .ft-cur .logo-ph { font-size: 8px; font-weight: 700; color: rgba(255,100,0,0.6); letter-spacing: 0.08em; }
+
+  .ft-new { background: #000; min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px 14px 14px; gap: 10px; position: relative; overflow: hidden; }
+  .ft-new .canvas-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 60%, rgba(20,15,35,0.7), #000); }
+  .ft-new .blur-layer { position: absolute; inset: 0; background: rgba(0,0,0,0.38); }
+  .ft-new .pre { font-size: 6px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.2); position: relative; z-index: 1; }
+  .ft-new .wordmark { font-size: 40px; font-weight: 700; color: #fff; letter-spacing: 0.04em; line-height: 0.9; position: relative; z-index: 1; margin-bottom: 2px; }
+  .ft-new .info { display: flex; flex-direction: column; gap: 8px; align-items: center; position: relative; z-index: 1; }
+  .ft-new .info-row { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .ft-new .ilabel { font-size: 5.5px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.55); }
+  .ft-new .ival { font-size: 8.5px; color: #fff; }
+  .ft-new .cta-btn { font-size: 7.5px; padding: 9px 22px; border: 1px solid rgba(255,255,255,0.35); color: #fff; background: transparent; letter-spacing: 0.1em; text-transform: uppercase; position: relative; z-index: 1; min-height: 40px; display: flex; align-items: center; }
+  .ft-new .bottom { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); width: 100%; margin-top: 2px; }
+  .ft-new .legal { display: flex; gap: 12px; }
+  .ft-new .ll { font-size: 6px; color: rgba(255,255,255,0.4); }
+  .ft-new .copy { font-size: 6px; color: rgba(255,255,255,0.5); }
+  .ft-new .logo-ph { font-size: 8px; font-weight: 700; color: rgba(255,100,0,0.6); letter-spacing: 0.08em; }
+</style>
+</head>
+<body>
+
+<h1>Mobile Layout — Corrected Audit</h1>
+<p class="page-sub">Actual sections: Hero → Concept → Elixir → Secret Creation → Food → Menu → Footer<br>Alchemy removed. All changes mobile-only (≤767px).</p>
+
+<!-- ① HERO -->
+<div class="section-title">① Hero</div>
+<div class="comparison">
+  <div><div class="phone"><div class="phone-notch"></div><div class="h-cur">
+    <div class="canvas-bg"></div>
+    <div class="upper">Enter the</div>
+    <div class="lower">Night</div>
+    <div class="tag">An exclusive cocktail bar hidden after dark.<br>Signature drinks that change with every visit.</div>
+    <div class="btns"><div class="btn">Reserve a Table</div><div class="btn">Our Menu</div></div>
+    <div class="hint">— Scroll to experience —</div>
+  </div></div><div class="phone-label">Current</div></div>
+  <div class="vs-arrow">→</div>
+  <div><div class="phone"><div class="phone-notch"></div><div class="h-new">
+    <div class="canvas-bg"></div>
+    <div class="upper">Enter the</div>
+    <div class="lower">Night</div>
+    <div class="rule"></div>
+    <div class="tag">An exclusive cocktail bar hidden after dark. Signature drinks that change with every visit.</div>
+    <div class="btns">
+      <div class="btn primary">Reserve a Table</div>
+      <div class="btn">Our Menu</div>
+    </div>
+    <div class="hint">— Scroll to experience —</div>
+  </div></div><div class="phone-label">Proposed</div></div>
+  <div class="issue-list">
+    <div class="issue"><span class="ico fix">✕</span><span>Side-by-side buttons too narrow on 375px — text clips or wraps awkwardly</span></div>
+    <div class="issue"><span class="ico warn">!</span><span>Both CTAs equal weight — no visual priority for the primary action</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>Stack buttons vertically, full-width inside a max-width container</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>"Reserve" gets gold accent treatment as the primary CTA</span></div>
+  </div>
+</div>
+
+<hr>
+
+<!-- ② ELIXIR -->
+<div class="section-title">② Elixir — scroll-driven video with drink switching</div>
+<div class="comparison">
+  <div><div class="phone"><div class="phone-notch"></div><div class="e-cur">
+    <div class="video-fill"></div>
+    <div class="overlay"></div>
+    <div class="grid">
+      <div class="left">
+        <div class="kicker">Hand-crafted. Small-batch.</div>
+        <div class="title">What's your<br><span>elixir?</span></div>
+      </div>
+      <div class="right">
+        <div class="di"><div class="dn">Tropical Sunset</div></div>
+        <div class="di active"><div class="dn">Emerald Cooler</div><div class="dd">A crisp gin-based refresher with cucumber essence...</div></div>
+        <div class="di"><div class="dn">Dragon Berry</div></div>
+      </div>
+    </div>
+  </div></div><div class="phone-label">Current</div></div>
+  <div class="vs-arrow">→</div>
+  <div><div class="phone"><div class="phone-notch"></div><div class="e-new">
+    <div class="video-fill"></div>
+    <div class="top-grad"></div>
+    <div class="bot-grad"></div>
+    <div class="top-left">
+      <div class="kicker">Hand-crafted. Small-batch.</div>
+      <div class="title">What's your<br><span>elixir?</span></div>
+    </div>
+    <div class="bottom-panel">
+      <div class="active-name">Emerald Cooler</div>
+      <div class="active-desc">A crisp gin-based refresher with cucumber essence and elderflower, served over a frozen cucumber sphere.</div>
+      <div class="dots-row">
+        <div class="dot"></div>
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="scroll-hint">Scroll to explore</div>
+      </div>
+    </div>
+  </div></div><div class="phone-label">Proposed</div></div>
+  <div class="issue-list">
+    <div class="issue"><span class="ico fix">✕</span><span>Two-column grid splits 190px wide phone in half — both columns cramped and hard to read</span></div>
+    <div class="issue"><span class="ico warn">!</span><span>Drink list on right fights with the video content in the center</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>Title anchored top-left; video takes full screen</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>Active drink name + description floats as a bottom overlay — updates as you scroll, same as desktop</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>3 dots + "Scroll to explore" hint shows progress through the 3 drinks</span></div>
+  </div>
+</div>
+<div class="note">⚠ The scroll-driven canvas animation is <strong>preserved as-is</strong> — no change to the GSAP ScrollTrigger logic. Only the CSS layout of the content overlay changes.</div>
+
+<hr>
+
+<!-- ③ SECRET CREATION -->
+<div class="section-title">③ Secret Creation</div>
+<div class="comparison">
+  <div><div class="phone"><div class="phone-notch"></div><div class="sc-cur">
+    <div class="img-placeholder"></div>
+    <div class="eyebrow">The Process</div>
+    <div class="title">Each sip begins<br>in secret</div>
+    <div class="body">Our bartenders source rare botanicals from across the globe, combining ancient techniques with modern chemistry.</div>
+    <div class="status">Seasonal · Ever-changing</div>
+  </div></div><div class="phone-label">Current</div></div>
+  <div class="vs-arrow">→</div>
+  <div><div class="phone"><div class="phone-notch"></div><div class="sc-new">
+    <div class="vignette"></div>
+    <div class="img-circle"><div class="img-inner"></div><div class="ring-outer"></div></div>
+    <div class="eyebrow">The Process</div>
+    <div class="title">Each sip begins<br>in secret</div>
+    <div class="body">Our bartenders source rare botanicals from across the globe, combining ancient techniques with modern chemistry.</div>
+    <div class="status">Seasonal · Ever-changing</div>
+  </div></div><div class="phone-label">Proposed</div></div>
+  <div class="issue-list">
+    <div class="issue"><span class="ico fix">✕</span><span><code>.sc-img</code> has <code>width: 18vw</code> — on mobile that's ~68px, completely invisible as a design element</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>Proper <code>width: 80px; height: 80px</code> circular image with glow and dashed orbit ring — becomes a visible visual anchor</span></div>
+  </div>
+</div>
+
+<hr>
+
+<!-- ④ FOOD -->
+<div class="section-title">④ Food</div>
+<div class="comparison">
+  <div><div class="phone"><div class="phone-notch"></div><div class="fd-cur">
+    <div><div class="umami">UMAMI</div><div class="ad">After Dark</div></div>
+    <div class="body">Dishes crafted to complement the cocktail experience. Each plate is designed to enhance the flavours in the glass.</div>
+    <div class="nav"><div class="arr">‹</div><div class="di"><div class="dn">Oyamel Oysters</div><div class="dd">White balsamic pearls, mignonette foam</div></div><div class="arr">›</div></div>
+    <div class="img-wrap"><div class="img-ph">DISH</div></div>
+  </div></div><div class="phone-label">Current</div></div>
+  <div class="vs-arrow">→</div>
+  <div><div class="phone"><div class="phone-notch"></div><div class="fd-new">
+    <div class="img-top">
+      <div class="img-circle"><div class="img-ph">DISH</div></div>
+      <div class="pill">Oyamel Oysters  1/4</div>
+    </div>
+    <div class="text">
+      <div><div class="umami">UMAMI</div><div class="ad">After Dark</div></div>
+      <div class="body">Dishes crafted to complement the cocktail experience.</div>
+      <div class="nav"><div class="arr">‹</div><div class="di"><div class="dn">Oyamel Oysters</div><div class="dd">White balsamic pearls, mignonette foam</div></div><div class="arr">›</div></div>
+    </div>
+  </div></div><div class="phone-label">Proposed</div></div>
+  <div class="issue-list">
+    <div class="issue"><span class="ico warn">!</span><span>Dish image sits at the bottom (130×130px) after all text — disconnected from the dish name above it</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>Image-first: compact circular dish photo at top with pill label, text section below</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>Dish name shown in pill overlay on the image — no visual disconnect</span></div>
+  </div>
+</div>
+
+<hr>
+
+<!-- ⑤ MENU -->
+<div class="section-title">⑤ Menu</div>
+<div class="comparison">
+  <div><div class="phone"><div class="phone-notch"></div><div class="mn-cur">
+    <div class="header"><div class="title">Our <span>Menu</span></div></div>
+    <div class="tabs-wrap">
+      <div class="tab active">Cocktails</div>
+      <div class="tab">Spirits</div>
+      <div class="tab">Wine</div>
+      <div class="tab">Food</div>
+    </div>
+    <div class="items">
+      <div class="item"><div class="irow"><span class="iname">Eclipse Negroni</span><span class="idots"></span><span class="iprice">₪68</span></div><div class="idesc">Campari, sweet vermouth, aged gin</div></div>
+      <div class="item"><div class="irow"><span class="iname">Midnight Sour</span><span class="idots"></span><span class="iprice">₪62</span></div><div class="idesc">Whiskey, lemon, honey, egg white</div></div>
+      <div class="item"><div class="irow"><span class="iname">Dark Matter</span><span class="idots"></span><span class="iprice">₪72</span></div><div class="idesc">Mezcal, activated charcoal, lime</div></div>
+    </div>
+  </div></div><div class="phone-label">Current</div></div>
+  <div class="vs-arrow">→</div>
+  <div><div class="phone"><div class="phone-notch"></div><div class="mn-new">
+    <div class="header"><div class="title">Our <span>Menu</span></div></div>
+    <div class="tabs-wrap">
+      <div class="tab active">Cocktails</div>
+      <div class="tab">Spirits</div>
+      <div class="tab">Wine</div>
+      <div class="tab">Food</div>
+      <div class="fade-hint"></div>
+    </div>
+    <div class="items">
+      <div class="item"><div class="irow"><span class="iname">Eclipse Negroni</span><span class="idots"></span><span class="iprice">₪68</span></div><div class="idesc">Campari, sweet vermouth, aged gin</div></div>
+      <div class="item"><div class="irow"><span class="iname">Midnight Sour</span><span class="idots"></span><span class="iprice">₪62</span></div><div class="idesc">Whiskey, lemon, honey, egg white</div></div>
+      <div class="item"><div class="irow"><span class="iname">Dark Matter</span><span class="idots"></span><span class="iprice">₪72</span></div><div class="idesc">Mezcal, activated charcoal, lime</div></div>
+    </div>
+  </div></div><div class="phone-label">Proposed</div></div>
+  <div class="issue-list">
+    <div class="issue"><span class="ico warn">!</span><span>Tab touch targets are only ~30px tall — below 44px minimum for comfortable tapping</span></div>
+    <div class="issue"><span class="ico warn">!</span><span>Menu item padding (12px top/bottom) is tight for fingers — easier to mis-tap</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>Tabs get <code>min-height: 44px</code> with padding that meets touch target standard</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>Item row padding increased to 13–14px, item name font bumped to 14px</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>Right fade hint on tab bar tells user there are more tabs to scroll to</span></div>
+  </div>
+</div>
+
+<hr>
+
+<!-- ⑥ FOOTER -->
+<div class="section-title">⑥ Footer — scroll-driven frame animation</div>
+<div class="comparison">
+  <div><div class="phone"><div class="phone-notch"></div><div class="ft-cur">
+    <div class="canvas-bg"></div>
+    <div class="blur-layer"></div>
+    <div class="pre">Fine Cocktail Bar · Tel Aviv · Est. 2024</div>
+    <div class="wordmark">Eclipse</div>
+    <div class="info">
+      <div class="info-row"><div class="ilabel">Address</div><div class="ival">42 HaNevi'im St.</div></div>
+      <div class="info-row"><div class="ilabel">Hours</div><div class="ival">20:00 — Last shadow</div></div>
+      <div class="info-row"><div class="ilabel">Reservations</div><div class="ival">Required</div></div>
+    </div>
+    <div class="cta-btn">Reserve Your Seat</div>
+    <div class="bottom">
+      <div class="copy">© 2026 Eclipse Bar Ltd.</div>
+      <div class="legal"><span class="ll">Accessibility</span><span class="ll">Privacy Policy</span></div>
+      <div class="logo-ph">ZINKA</div>
+    </div>
+  </div></div><div class="phone-label">Current</div></div>
+  <div class="vs-arrow">→</div>
+  <div><div class="phone"><div class="phone-notch"></div><div class="ft-new">
+    <div class="canvas-bg"></div>
+    <div class="blur-layer"></div>
+    <div class="pre">Fine Cocktail Bar · Tel Aviv · Est. 2024</div>
+    <div class="wordmark">Eclipse</div>
+    <div class="info">
+      <div class="info-row"><div class="ilabel">Address</div><div class="ival">42 HaNevi'im St.</div></div>
+      <div class="info-row"><div class="ilabel">Hours</div><div class="ival">20:00 — Last shadow</div></div>
+      <div class="info-row"><div class="ilabel">Reservations</div><div class="ival">Required</div></div>
+    </div>
+    <div class="cta-btn">Reserve Your Seat</div>
+    <div class="bottom">
+      <div class="legal"><span class="ll">Accessibility</span><span class="ll">Privacy Policy</span></div>
+      <div class="copy">© 2026 Eclipse Bar Ltd. · All rights reserved</div>
+      <div class="logo-ph">ZINKA</div>
+    </div>
+  </div></div><div class="phone-label">Proposed</div></div>
+  <div class="issue-list">
+    <div class="issue"><span class="ico ok">✓</span><span>Footer canvas animation preserved — no change to <code>useFooterFrameSequence</code></span></div>
+    <div class="issue"><span class="ico warn">!</span><span><code>ft-wordmark</code> at 52px can clip on 320px screens — reduce to 42px and tighten letter-spacing</span></div>
+    <div class="issue"><span class="ico warn">!</span><span>Reserve button needs a proper 44px min-height touch target</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>Bottom bar: legal links → copyright → credit logo — cleaner reading order</span></div>
+    <div class="issue"><span class="ico ok">✓</span><span>CTA button gets <code>min-height: 44px</code> and wider padding for touch</span></div>
+  </div>
+</div>
+<div class="note">⚠ The footer frame-sequence animation (140vh scroll space) works the same on mobile. The canvas fills the sticky panel. Content reveals on top — only sizing and spacing change.</div>
+
+</body>
+</html>

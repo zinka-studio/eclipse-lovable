@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nav Menu Mobile Options</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d0d12; color: #e8e8e8; padding: 32px 24px 80px; }
+  h1 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .page-sub { font-size: 13px; color: #888; margin-bottom: 40px; line-height: 1.5; }
+  .section-label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #F4C485; margin-bottom: 20px; margin-top: 48px; }
+  .row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+  .phone { width: 200px; flex-shrink: 0; border: 1.5px solid #333; border-radius: 30px; overflow: hidden; background: #000; }
+  .phone-notch { width: 80px; height: 18px; background: #000; border-radius: 0 0 10px 10px; margin: 0 auto; }
+  .phone-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #555; text-align: center; padding: 8px 0 4px; }
+  .desc { flex: 1; min-width: 220px; padding-top: 6px; }
+  .desc h3 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+  .desc p { font-size: 12.5px; color: #999; line-height: 1.6; margin-bottom: 8px; }
+  .tag { display: inline-block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 9px; border-radius: 4px; margin-bottom: 8px; }
+  .tag.rec { background: rgba(244,196,133,0.12); color: #F4C485; border: 1px solid rgba(244,196,133,0.2); }
+  .tag.alt { background: rgba(255,255,255,0.05); color: #888; border: 1px solid rgba(255,255,255,0.08); }
+  hr { border: none; border-top: 1px solid #1e1e26; margin: 52px 0 0; }
+  ul { padding-left: 16px; }
+  ul li { font-size: 12.5px; color: #999; line-height: 1.7; }
+  ul li strong { color: #ddd; }
+
+  /* ── CURRENT ── */
+  .cur-screen { background: #040406; min-height: 340px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 20px 24px; gap: 0; position: relative; }
+  .cur-nav-top { position: absolute; top: 0; left: 0; right: 0; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; }
+  .cur-logo { font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 0.06em; }
+  .cur-x { font-size: 14px; color: rgba(255,255,255,0.5); }
+  .cur-links { display: flex; flex-direction: column; gap: 2px; }
+  .cur-link { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: 0.02em; line-height: 1.3; }
+  .cur-link.dim { color: rgba(255,255,255,0.22); }
+  .cur-reserve { margin-top: 20px; font-size: 8px; padding: 10px 20px; border: 1px solid rgba(255,255,255,0.35); color: #fff; letter-spacing: 0.14em; text-transform: uppercase; }
+  .cur-bottom { position: absolute; bottom: 8%; left: 24px; right: 24px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+  .cur-bl { font-size: 7px; color: rgba(255,255,255,0.2); letter-spacing: 0.2em; text-transform: uppercase; }
+
+  /* ── OPTION A: Full-screen, links top-aligned ── */
+  .a-screen { background: #040406; min-height: 340px; display: flex; flex-direction: column; padding: 0; position: relative; }
+  .a-top { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; }
+  .a-logo { font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 0.06em; }
+  .a-x { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; text-transform: uppercase; }
+  .a-links { padding: 8px 0; flex: 1; display: flex; flex-direction: column; }
+  .a-link { padding: 9px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .a-link-name { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 0.02em; }
+  .a-link-num { font-size: 7px; color: rgba(255,255,255,0.2); letter-spacing: 0.14em; }
+  .a-reserve { margin: 10px 20px; font-size: 8px; padding: 11px; border: 1px solid rgba(244,196,133,0.35); color: #F4C485; letter-spacing: 0.14em; text-transform: uppercase; text-align: center; background: rgba(244,196,133,0.05); }
+  .a-bottom { padding: 10px 20px 14px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; }
+  .a-bl { font-size: 7px; color: rgba(255,255,255,0.2); letter-spacing: 0.16em; text-transform: uppercase; }
+
+  /* ── OPTION B: Bottom sheet / drawer ── */
+  .b-screen { background: linear-gradient(to bottom, rgba(10,8,18,0.95), #000); min-height: 340px; position: relative; overflow: hidden; }
+  .b-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(20,15,40,0.6), transparent); }
+  .b-page-preview { padding: 14px 18px 0; position: relative; z-index: 1; }
+  .b-logo { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 0.06em; }
+  .b-page-text { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.08); margin-top: 10px; line-height: 0.9; }
+  .b-sheet { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(12,10,20,0.97); border-radius: 20px 20px 0 0; border-top: 1px solid rgba(255,255,255,0.08); padding: 0 20px 14px; z-index: 2; }
+  .b-handle { width: 32px; height: 3px; background: rgba(255,255,255,0.15); border-radius: 2px; margin: 10px auto 14px; }
+  .b-links { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+  .b-link { padding: 12px 14px; background: rgba(255,255,255,0.02); display: flex; flex-direction: column; gap: 2px; }
+  .b-link-num { font-size: 6.5px; color: rgba(255,255,255,0.2); letter-spacing: 0.14em; }
+  .b-link-name { font-size: 14px; font-weight: 700; color: #fff; }
+  .b-reserve { font-size: 8px; padding: 11px; border: 1px solid rgba(244,196,133,0.35); color: #F4C485; letter-spacing: 0.14em; text-transform: uppercase; text-align: center; background: rgba(244,196,133,0.05); border-radius: 4px; }
+
+  /* ── OPTION C: Sticky bottom nav bar (always visible) ── */
+  .c-screen { background: #050507; min-height: 340px; position: relative; display: flex; flex-direction: column; }
+  .c-top { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .c-logo { font-size: 12px; font-weight: 700; color: #fff; }
+  .c-burger { display: flex; flex-direction: column; gap: 3px; }
+  .c-bline { width: 18px; height: 1px; background: rgba(255,255,255,0.6); }
+  .c-bline:nth-child(2) { width: 12px; margin-left: auto; }
+  .c-content { flex: 1; background: radial-gradient(ellipse 70% 50% at 50% 60%, rgba(15,12,30,0.7), #050507); display: flex; align-items: center; justify-content: center; padding: 0 18px; }
+  .c-page-title { font-size: 38px; font-weight: 700; color: rgba(255,255,255,0.07); text-align: center; line-height: 0.9; }
+  .c-bottom-bar { flex-shrink: 0; background: rgba(6,5,10,0.96); border-top: 1px solid rgba(255,255,255,0.07); padding: 0 4px; display: flex; justify-content: space-around; }
+  .c-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 8px 10px; flex: 1; }
+  .c-nav-dot { width: 3px; height: 3px; border-radius: 50%; background: transparent; }
+  .c-nav-item.active .c-nav-dot { background: #F4C485; }
+  .c-nav-label { font-size: 7px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); white-space: nowrap; }
+  .c-nav-item.active .c-nav-label { color: #F4C485; }
+</style>
+</head>
+<body>
+
+<h1>Nav Overlay — Mobile Redesign Options</h1>
+<p class="page-sub">Current: full-screen overlay, links vertically centered. Three new directions below.</p>
+
+<!-- CURRENT -->
+<div class="section-label">Current State</div>
+<div class="row">
+  <div>
+    <div class="phone"><div class="phone-notch"></div>
+      <div class="cur-screen">
+        <div class="cur-nav-top"><div class="cur-logo">ECLIPSE</div><div class="cur-x">✕</div></div>
+        <div class="cur-links">
+          <div class="cur-link">Concept</div>
+          <div class="cur-link">Elixir</div>
+          <div class="cur-link">Food</div>
+          <div class="cur-link">Menu</div>
+          <div class="cur-link dim">Gallery</div>
+        </div>
+        <div class="cur-reserve">Reserve a Table</div>
+        <div class="cur-bottom">
+          <div class="cur-bl">Instagram</div>
+          <div class="cur-bl">Privacy Policy</div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">Current</div>
+  </div>
+  <div class="desc">
+    <p>Links are vertically centered in the middle of the screen. Large 40px type. Reserve button below. Footer links at the very bottom.</p>
+    <p style="color:#777;">Works, but there's a lot of empty space and no clear top-to-bottom hierarchy. The giant type can feel overwhelming on small screens.</p>
+  </div>
+</div>
+
+<hr>
+
+<!-- OPTION A -->
+<div class="section-label">Option A — Top-aligned, full-screen with section numbers</div>
+<div class="row">
+  <div>
+    <div class="phone"><div class="phone-notch"></div>
+      <div class="a-screen">
+        <div class="a-top"><div class="a-logo">ECLIPSE</div><div class="a-x">Close</div></div>
+        <div class="a-links">
+          <div class="a-link"><div class="a-link-name">Concept</div><div class="a-link-num">01</div></div>
+          <div class="a-link"><div class="a-link-name">Elixir</div><div class="a-link-num">02</div></div>
+          <div class="a-link"><div class="a-link-name">Food</div><div class="a-link-num">03</div></div>
+          <div class="a-link"><div class="a-link-name">Menu</div><div class="a-link-num">04</div></div>
+        </div>
+        <div class="a-reserve">Reserve a Table</div>
+        <div class="a-bottom"><div class="a-bl">Instagram</div><div class="a-bl">Privacy</div></div>
+      </div>
+    </div>
+    <div class="phone-label">Option A</div>
+  </div>
+  <div class="desc">
+    <div class="tag rec">Recommended</div>
+    <h3>Top-aligned, row-separated links</h3>
+    <p>Logo + close button at the top. Nav links start immediately below, each on its own row with a subtle divider. Section number on the right. Reserve CTA at the bottom of the list, footer links below.</p>
+    <ul>
+      <li>Smaller type (22px) — <strong>more items visible</strong> above the fold</li>
+      <li>Section numbers add elegance, match the desktop style</li>
+      <li>Reserve CTA gets gold treatment — clearly the primary action</li>
+      <li>Clear top → bottom reading flow</li>
+    </ul>
+  </div>
+</div>
+
+<hr>
+
+<!-- OPTION B -->
+<div class="section-label">Option B — Bottom sheet, 2×2 grid</div>
+<div class="row">
+  <div>
+    <div class="phone"><div class="phone-notch"></div>
+      <div class="b-screen">
+        <div class="b-bg"></div>
+        <div class="b-page-preview">
+          <div class="b-logo">ECLIPSE</div>
+          <div class="b-page-text">Enter<br>the<br>Night</div>
+        </div>
+        <div class="b-sheet">
+          <div class="b-handle"></div>
+          <div class="b-links">
+            <div class="b-link"><div class="b-link-num">01</div><div class="b-link-name">Concept</div></div>
+            <div class="b-link"><div class="b-link-num">02</div><div class="b-link-name">Elixir</div></div>
+            <div class="b-link"><div class="b-link-num">03</div><div class="b-link-name">Food</div></div>
+            <div class="b-link"><div class="b-link-num">04</div><div class="b-link-name">Menu</div></div>
+          </div>
+          <div class="b-reserve">Reserve a Table</div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">Option B</div>
+  </div>
+  <div class="desc">
+    <div class="tag alt">Alternative</div>
+    <h3>Bottom drawer sheet</h3>
+    <p>The page scales/dims behind it (like current desktop behaviour). A bottom sheet rises up showing a 2×2 grid of section links + the Reserve CTA.</p>
+    <ul>
+      <li>Feels very native-app — familiar bottom sheet pattern</li>
+      <li>Page content is still visible behind, gives context</li>
+      <li>Compact — the whole nav fits without scrolling</li>
+      <li><strong>Requires changing the open/close animation logic</strong> — more work than a CSS-only change</li>
+    </ul>
+  </div>
+</div>
+
+<hr>
+
+<!-- OPTION C -->
+<div class="section-label">Option C — Persistent sticky bottom nav bar (always visible)</div>
+<div class="row">
+  <div>
+    <div class="phone"><div class="phone-notch"></div>
+      <div class="c-screen">
+        <div class="c-top"><div class="c-logo">ECLIPSE</div><div class="c-burger"><div class="c-bline"></div><div class="c-bline"></div><div class="c-bline"></div></div></div>
+        <div class="c-content"><div class="c-page-title">Enter<br>the<br>Night</div></div>
+        <div class="c-bottom-bar">
+          <div class="c-nav-item active"><div class="c-nav-dot"></div><div class="c-nav-label">Home</div></div>
+          <div class="c-nav-item"><div class="c-nav-dot"></div><div class="c-nav-label">Elixir</div></div>
+          <div class="c-nav-item"><div class="c-nav-dot"></div><div class="c-nav-label">Food</div></div>
+          <div class="c-nav-item"><div class="c-nav-dot"></div><div class="c-nav-label">Menu</div></div>
+          <div class="c-nav-item"><div class="c-nav-dot"></div><div class="c-nav-label">Reserve</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">Option C</div>
+  </div>
+  <div class="desc">
+    <div class="tag alt">Major redesign</div>
+    <h3>Always-visible bottom navigation bar</h3>
+    <p>No hamburger menu at all on mobile. A fixed bottom bar with 5 destinations is always present. Current section is highlighted in gold.</p>
+    <ul>
+      <li>Most discoverable — user always knows where they can go</li>
+      <li>"Reserve" becomes a direct tap, not buried in a menu</li>
+      <li><strong>Biggest change</strong> — requires new JS logic and removes the existing overlay menu on mobile entirely</li>
+      <li>May conflict with the cinematic scroll-driven feel of the site</li>
+    </ul>
+  </div>
+</div>
+
+</body>
+</html>

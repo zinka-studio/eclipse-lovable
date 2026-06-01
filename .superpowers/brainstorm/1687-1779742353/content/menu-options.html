@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Menu Mobile Options</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d0d12; color: #e8e8e8; padding: 32px 24px 80px; }
+  h1 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .page-sub { font-size: 13px; color: #888; margin-bottom: 40px; line-height: 1.5; }
+  .section-title { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #F4C485; margin-bottom: 20px; margin-top: 48px; }
+  .cards { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
+  .phone { width: 200px; flex-shrink: 0; border: 1.5px solid #333; border-radius: 30px; overflow: hidden; background: #000; }
+  .phone-notch { width: 80px; height: 18px; background: #000; border-radius: 0 0 10px 10px; margin: 0 auto; }
+  .phone-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #555; text-align: center; padding: 8px 0 4px; }
+  .desc { flex: 1; min-width: 220px; padding-top: 4px; }
+  .desc h3 { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+  .desc p { font-size: 12.5px; color: #999; line-height: 1.6; margin-bottom: 8px; }
+  .tag { display: inline-block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; margin-bottom: 4px; }
+  .tag.rec { background: rgba(244,196,133,0.12); color: #F4C485; border: 1px solid rgba(244,196,133,0.2); }
+  .tag.alt { background: rgba(255,255,255,0.05); color: #888; border: 1px solid rgba(255,255,255,0.08); }
+  hr { border: none; border-top: 1px solid #1e1e26; margin: 52px 0 0; }
+
+  /* ── SHARED PHONE PARTS ── */
+  .mn-head { padding: 20px 14px 12px; }
+  .mn-title { font-size: 22px; font-weight: 700; color: #fff; }
+  .mn-title span { color: #F4C485; }
+  .mn-sub { font-size: 7.5px; color: rgba(255,255,255,0.3); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 3px; }
+
+  /* ── OPTION A: Sticky tabs, solid black bg ── */
+  .a-wrap { display: flex; flex-direction: column; background: #000; min-height: 340px; }
+  .a-sticky { position: relative; background: #000; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .a-tabs { display: flex; gap: 0; overflow-x: hidden; }
+  .a-tab { font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); padding: 10px 12px 9px; white-space: nowrap; flex-shrink: 0; }
+  .a-tab.active { color: #fff; border-bottom: 1.5px solid #F4C485; }
+  .a-items { padding: 0 14px; overflow-y: hidden; flex: 1; }
+  .a-item { padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .a-row { display: flex; align-items: center; gap: 6px; }
+  .a-name { font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.88); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .a-price { font-size: 11px; color: rgba(255,255,255,0.38); flex-shrink: 0; }
+  .a-desc { font-size: 7.5px; color: rgba(255,255,255,0.22); font-style: italic; margin-top: 2px; line-height: 1.4; }
+
+  /* ── OPTION B: Sticky tabs, frosted glass overlay ── */
+  .b-wrap { display: flex; flex-direction: column; background: #000; min-height: 340px; }
+  .b-sticky { position: relative; background: rgba(0,0,0,0.82); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .b-glow { position: absolute; bottom: -1px; left: 0; right: 0; height: 12px; background: linear-gradient(to bottom, transparent, rgba(244,196,133,0.03)); pointer-events: none; }
+  .b-tabs { display: flex; gap: 0; overflow-x: hidden; padding: 0 2px; }
+  .b-tab { font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); padding: 10px 12px 9px; white-space: nowrap; flex-shrink: 0; transition: color 0.2s; }
+  .b-tab.active { color: #F4C485; border-bottom: 1.5px solid #F4C485; }
+  .b-items { padding: 0 14px; flex: 1; }
+  .b-item { padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .b-row { display: flex; align-items: center; gap: 6px; }
+  .b-name { font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.88); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .b-price { font-size: 11px; color: rgba(255,255,255,0.38); flex-shrink: 0; }
+  .b-desc { font-size: 7.5px; color: rgba(255,255,255,0.22); font-style: italic; margin-top: 2px; line-height: 1.4; }
+
+  /* ── OPTION C: Sticky tabs, very dark tinted overlay with divider glow ── */
+  .c-wrap { display: flex; flex-direction: column; background: #000; min-height: 340px; }
+  .c-sticky { position: relative; background: rgba(4,4,6,0.95); }
+  .c-border { height: 1px; background: linear-gradient(to right, transparent 0%, rgba(244,196,133,0.2) 30%, rgba(244,196,133,0.2) 70%, transparent 100%); }
+  .c-tabs { display: flex; gap: 0; overflow-x: hidden; }
+  .c-tab { font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); padding: 11px 12px 10px; white-space: nowrap; flex-shrink: 0; }
+  .c-tab.active { color: #fff; }
+  .c-tab.active .c-pill { background: rgba(244,196,133,0.12); color: #F4C485; border-radius: 3px; padding: 1px 6px; }
+  .c-items { padding: 0 14px; flex: 1; }
+  .c-item { padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .c-row { display: flex; align-items: center; gap: 6px; }
+  .c-name { font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.88); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .c-price { font-size: 11px; color: rgba(255,255,255,0.38); flex-shrink: 0; }
+  .c-desc { font-size: 7.5px; color: rgba(255,255,255,0.22); font-style: italic; margin-top: 2px; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<h1>Menu — Mobile Sticky Tab Options</h1>
+<p class="page-sub">All three options: items in a single row (name + price), description on the line below.<br>Tabs stick to the top of the section while you scroll items. Choose your preferred tab overlay style.</p>
+
+<!-- OPTION A -->
+<div class="section-title">Option A — Solid Black</div>
+<div class="cards">
+  <div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="a-wrap">
+        <div class="mn-head"><div class="mn-title">Our <span>Menu</span></div><div class="mn-sub">Cocktails · Spirits · Food · Wine</div></div>
+        <div class="a-sticky">
+          <div class="a-tabs">
+            <div class="a-tab active">Cocktails</div>
+            <div class="a-tab">Spirits</div>
+            <div class="a-tab">Wine</div>
+            <div class="a-tab">Food</div>
+          </div>
+        </div>
+        <div class="a-items">
+          <div class="a-item"><div class="a-row"><span class="a-name">Eclipse Negroni</span><span class="a-price">₪68</span></div><div class="a-desc">Campari, sweet vermouth, aged gin</div></div>
+          <div class="a-item"><div class="a-row"><span class="a-name">Midnight Sour</span><span class="a-price">₪62</span></div><div class="a-desc">Whiskey, lemon, honey, egg white</div></div>
+          <div class="a-item"><div class="a-row"><span class="a-name">Dark Matter</span><span class="a-price">₪72</span></div><div class="a-desc">Mezcal, activated charcoal, lime</div></div>
+          <div class="a-item"><div class="a-row"><span class="a-name">Lunar Eclipse</span><span class="a-price">₪65</span></div><div class="a-desc">Elderflower, prosecco, violet liqueur</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">Option A</div>
+  </div>
+  <div class="desc">
+    <div class="tag rec">Recommended</div>
+    <h3>Solid Black — Clean & Simple</h3>
+    <p>Tab bar has a pure <code style="background:rgba(244,196,133,0.1);color:#F4C485;font-size:11px;padding:1px 4px;border-radius:3px;">background:#000</code> + bottom border. Crisp, no distractions. Active tab has gold underline, inactive tabs are dimmed.</p>
+    <p>Works perfectly since the whole site is on a black background — the sticky bar feels native to the page.</p>
+  </div>
+</div>
+
+<hr>
+
+<!-- OPTION B -->
+<div class="section-title">Option B — Frosted Glass Overlay</div>
+<div class="cards">
+  <div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="b-wrap">
+        <div class="mn-head"><div class="mn-title">Our <span>Menu</span></div><div class="mn-sub">Cocktails · Spirits · Food · Wine</div></div>
+        <div class="b-sticky">
+          <div class="b-tabs">
+            <div class="b-tab active">Cocktails</div>
+            <div class="b-tab">Spirits</div>
+            <div class="b-tab">Wine</div>
+            <div class="b-tab">Food</div>
+          </div>
+          <div class="b-glow"></div>
+        </div>
+        <div class="b-items">
+          <div class="b-item"><div class="b-row"><span class="b-name">Eclipse Negroni</span><span class="b-price">₪68</span></div><div class="b-desc">Campari, sweet vermouth, aged gin</div></div>
+          <div class="b-item"><div class="b-row"><span class="b-name">Midnight Sour</span><span class="b-price">₪62</span></div><div class="b-desc">Whiskey, lemon, honey, egg white</div></div>
+          <div class="b-item"><div class="b-row"><span class="b-name">Dark Matter</span><span class="b-price">₪72</span></div><div class="b-desc">Mezcal, activated charcoal, lime</div></div>
+          <div class="b-item"><div class="b-row"><span class="b-name">Lunar Eclipse</span><span class="b-price">₪65</span></div><div class="b-desc">Elderflower, prosecco, violet liqueur</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">Option B</div>
+  </div>
+  <div class="desc">
+    <div class="tag alt">Alternative</div>
+    <h3>Frosted Glass — Subtle Blur</h3>
+    <p><code style="background:rgba(244,196,133,0.1);color:#F4C485;font-size:11px;padding:1px 4px;border-radius:3px;">backdrop-filter: blur(12px)</code> with 82% black tint. Active tab is gold, not white.</p>
+    <p>Slightly more premium feel — matches the blurred layers used in the Booking Drawer. Heavier on GPU but barely noticeable at this scale.</p>
+  </div>
+</div>
+
+<hr>
+
+<!-- OPTION C -->
+<div class="section-title">Option C — Near-Black with Gold Divider</div>
+<div class="cards">
+  <div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="c-wrap">
+        <div class="mn-head"><div class="mn-title">Our <span>Menu</span></div><div class="mn-sub">Cocktails · Spirits · Food · Wine</div></div>
+        <div class="c-sticky">
+          <div class="c-tabs">
+            <div class="c-tab active"><span class="c-pill">Cocktails</span></div>
+            <div class="c-tab">Spirits</div>
+            <div class="c-tab">Wine</div>
+            <div class="c-tab">Food</div>
+          </div>
+          <div class="c-border"></div>
+        </div>
+        <div class="c-items">
+          <div class="c-item"><div class="c-row"><span class="c-name">Eclipse Negroni</span><span class="c-price">₪68</span></div><div class="c-desc">Campari, sweet vermouth, aged gin</div></div>
+          <div class="c-item"><div class="c-row"><span class="c-name">Midnight Sour</span><span class="c-price">₪62</span></div><div class="c-desc">Whiskey, lemon, honey, egg white</div></div>
+          <div class="c-item"><div class="c-row"><span class="c-name">Dark Matter</span><span class="c-price">₪72</span></div><div class="c-desc">Mezcal, activated charcoal, lime</div></div>
+          <div class="c-item"><div class="c-row"><span class="c-name">Lunar Eclipse</span><span class="c-price">₪65</span></div><div class="c-desc">Elderflower, prosecco, violet liqueur</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">Option C</div>
+  </div>
+  <div class="desc">
+    <div class="tag alt">Alternative</div>
+    <h3>Near-Black + Gold Rule + Active Pill</h3>
+    <p>Tab bar background is <code style="background:rgba(244,196,133,0.1);color:#F4C485;font-size:11px;padding:1px 4px;border-radius:3px;">#040406</code> (slightly off pure black). A gold-tinted gradient line separates it from items below. Active tab gets a gold-tinted pill highlight instead of an underline.</p>
+    <p>More distinct from the content below — makes it clearer that the tabs are a navigation layer.</p>
+  </div>
+</div>
+
+</body>
+</html>
