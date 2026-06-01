@@ -88,7 +88,7 @@ export default function SecretCreation() {
 
         <motion.p className="sc-body" variants={itemVariants}>
           Every evening our master alchemist debuts a single creation that exists for one night
-          only. No recipe is ever repeated. Ask your server for the &ldquo;Eclipse Protocol&rdquo;
+          only. No recipe is ever repeated. Ask your server for the &ldquo;The House Protocol&rdquo;
           to reveal tonight&apos;s secret.
         </motion.p>
 

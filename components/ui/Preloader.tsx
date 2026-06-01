@@ -40,8 +40,8 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       <div className="preloader-panel preloader-panel--t" />
       <div className="preloader-panel preloader-panel--b" />
       <div className={`preloader-brand${phase === 'open' ? ' preloader-brand--fade' : ''}`}>
-        <span className="preloader-brand-dim">Eclipse</span>
-        <span className="preloader-brand-lit">Eclipse</span>
+        <span className="preloader-brand-dim">The House</span>
+        <span className="preloader-brand-lit">The House</span>
       </div>
     </div>
   );
