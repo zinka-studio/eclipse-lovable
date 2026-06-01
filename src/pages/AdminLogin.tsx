@@ -20,6 +20,7 @@ function LoginForm() {
       body: JSON.stringify({ password }),
     })
     if (res.ok) {
+      setAdminAuthed()
       navigate(from)
     } else {
       setError('Incorrect password')
