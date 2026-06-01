@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import LenisProvider from '@/components/ui/LenisProvider'
-import RequireAdminAuth from '@/components/RequireAdminAuth'
+import RequireAdminAuth from '../components/RequireAdminAuth'
 import Home from './pages/Home'
 import Admin from './pages/Admin'
 import AdminLogin from './pages/AdminLogin'
