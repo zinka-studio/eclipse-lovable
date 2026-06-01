@@ -1,5 +1,6 @@
 import { useState, Suspense } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { setAdminAuthed } from '../../components/RequireAdminAuth'
 
 function LoginForm() {
   const [password, setPassword] = useState('')
@@ -19,6 +20,7 @@ function LoginForm() {
       body: JSON.stringify({ password }),
     })
     if (res.ok) {
+      setAdminAuthed()
       navigate(from)
     } else {
       setError('Incorrect password')
