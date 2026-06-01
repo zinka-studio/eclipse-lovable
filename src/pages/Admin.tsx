@@ -508,6 +508,7 @@ export default function AdminPage() {
 
   async function logout() {
     await fetch('/admin/api/logout', { method: 'POST' })
+    clearAdminAuthed()
     navigate('/admin/login')
   }
 
