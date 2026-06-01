@@ -1,11 +1,28 @@
 'use client';
 import { useState } from 'react';
+import { z } from 'zod';
 import { supabase } from '@/lib/supabase';
 
 interface BookingDrawerProps {
   open: boolean;
   onClose: () => void;
 }
+
+const reservationSchema = z.object({
+  full_name: z.string().trim().min(1, 'Name is required').max(100, 'Name is too long'),
+  email: z.string().trim().email('Please enter a valid email').max(254, 'Email is too long'),
+  date: z.string().refine((d) => {
+    const parsed = new Date(d);
+    if (isNaN(parsed.getTime())) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const oneYear = new Date();
+    oneYear.setFullYear(oneYear.getFullYear() + 1);
+    return parsed >= today && parsed <= oneYear;
+  }, 'Please choose a date within the next year'),
+  guests: z.number().int().min(1, 'At least 1 guest').max(12, 'Maximum 12 guests'),
+  special_requests: z.string().trim().max(500, 'Please keep requests under 500 characters').optional(),
+});
 
 export default function BookingDrawer({ open, onClose }: BookingDrawerProps) {
   const [form, setForm] = useState({
@@ -16,6 +33,7 @@ export default function BookingDrawer({ open, onClose }: BookingDrawerProps) {
     special_requests: '',
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMsg, setErrorMsg] = useState<string>('');
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -23,19 +41,36 @@ export default function BookingDrawer({ open, onClose }: BookingDrawerProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.full_name || !form.email || !form.date || !form.guests) return;
-    setStatus('loading');
+    setErrorMsg('');
 
-    const { error } = await supabase.from('reservations').insert({
+    const guestsNum = parseInt(form.guests, 10);
+    const parsed = reservationSchema.safeParse({
       full_name: form.full_name,
       email: form.email,
       date: form.date,
-      guests: parseInt(form.guests),
-      special_requests: form.special_requests || null,
+      guests: Number.isNaN(guestsNum) ? -1 : guestsNum,
+      special_requests: form.special_requests || undefined,
+    });
+
+    if (!parsed.success) {
+      setStatus('error');
+      setErrorMsg(parsed.error.issues[0]?.message ?? 'Please check your details');
+      return;
+    }
+
+    setStatus('loading');
+
+    const { error } = await supabase.from('reservations').insert({
+      full_name: parsed.data.full_name,
+      email: parsed.data.email,
+      date: parsed.data.date,
+      guests: parsed.data.guests,
+      special_requests: parsed.data.special_requests ?? null,
     });
 
     if (error) {
       setStatus('error');
+      setErrorMsg('Something went wrong. Please try again.');
     } else {
       setStatus('success');
       setForm({ full_name: '', email: '', date: '', guests: '', special_requests: '' });
@@ -44,6 +79,7 @@ export default function BookingDrawer({ open, onClose }: BookingDrawerProps) {
 
   function handleClose() {
     setStatus('idle');
+    setErrorMsg('');
     onClose();
   }
 
@@ -69,14 +105,14 @@ export default function BookingDrawer({ open, onClose }: BookingDrawerProps) {
             <button className="dr-submit" style={{ marginTop: '1rem' }} onClick={handleClose}>Close</button>
           </div>
         ) : (
-          <form className="dr-form" onSubmit={handleSubmit}>
+          <form className="dr-form" onSubmit={handleSubmit} noValidate>
             <div className="dr-field">
               <div className="dr-label">Full Name</div>
-              <input className="dr-input" type="text" name="full_name" value={form.full_name} onChange={handleChange} placeholder="Your name" required />
+              <input className="dr-input" type="text" name="full_name" value={form.full_name} onChange={handleChange} placeholder="Your name" maxLength={100} required />
             </div>
             <div className="dr-field">
               <div className="dr-label">Email</div>
-              <input className="dr-input" type="email" name="email" value={form.email} onChange={handleChange} placeholder="you@email.com" required />
+              <input className="dr-input" type="email" name="email" value={form.email} onChange={handleChange} placeholder="you@email.com" maxLength={254} required />
             </div>
             <div className="dr-field">
               <div className="dr-label">Date</div>
@@ -88,11 +124,11 @@ export default function BookingDrawer({ open, onClose }: BookingDrawerProps) {
             </div>
             <div className="dr-field full">
               <div className="dr-label">Special Requests</div>
-              <input className="dr-input" type="text" name="special_requests" value={form.special_requests} onChange={handleChange} placeholder="Allergies, occasions, preferences…" />
+              <input className="dr-input" type="text" name="special_requests" value={form.special_requests} onChange={handleChange} placeholder="Allergies, occasions, preferences…" maxLength={500} />
             </div>
-            {status === 'error' && (
+            {status === 'error' && errorMsg && (
               <div style={{ color: '#f87171', fontSize: '0.8rem', textAlign: 'center' }}>
-                Something went wrong. Please try again.
+                {errorMsg}
               </div>
             )}
             <div className="dr-submit-wrap">
