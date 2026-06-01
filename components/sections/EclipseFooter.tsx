@@ -32,7 +32,7 @@ export default function EclipseFooter({ onReserve }: FooterProps) {
         {/* Footer text content — reveals as video approaches its last frame */}
         <div ref={contentRef} className="footer-content">
           <div className="ft-pre">Fine Cocktail Bar · Tel Aviv · Est. 2024</div>
-          <div className="ft-wordmark">Eclipse</div>
+          <div className="ft-wordmark">The House</div>
           <div className="ft-info">
             <div className="ft-info-item">
               <div className="ft-info-label">Address</div>
@@ -59,7 +59,7 @@ export default function EclipseFooter({ onReserve }: FooterProps) {
               <a href="#" className="ft-legal-link" style={{ cursor: 'none' }}>Accessibility</a>
               <a href="#" className="ft-legal-link" style={{ cursor: 'none' }}>Privacy Policy</a>
             </div>
-            <div className="ft-copy">© 2026 Eclipse Bar Ltd. · Tel Aviv · All rights reserved</div>
+            <div className="ft-copy">© 2026 The House Bar Ltd. · Tel Aviv · All rights reserved</div>
             <div className="ft-credit">
               <a
                 href="https://www.zinkadesigns.com/"
