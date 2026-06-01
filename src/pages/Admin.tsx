@@ -521,7 +521,7 @@ export default function AdminPage() {
       <header className="ap-header">
         <div className="ap-header-inner">
           <div className="ap-header-left">
-            <span className="ap-wordmark">Eclipse</span>
+            <span className="ap-wordmark">The House</span>
             <span className="ap-header-sep" />
             <nav className="ap-tabs">
               {tabs.map(t => (

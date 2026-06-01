@@ -33,7 +33,7 @@ export default function Nav({ onReserve, menuOpen, onMenuToggle }: NavProps) {
   return (
     <>
       <nav id="nav">
-        <a href="#" className="nav-logo">Eclipse</a>
+        <a href="#" className="nav-logo">The House</a>
         <div
           className={`burger${menuOpen ? ' open' : ''}`}
           onClick={() => onMenuToggle(!menuOpen)}

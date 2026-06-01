@@ -39,8 +39,8 @@ function LoginForm() {
 
       <form className="al-form" onSubmit={handleSubmit} noValidate>
         <div className="al-brand">
-          <div className="al-brand-dim">ECLIPSE</div>
-          <div className="al-brand-lit">ECLIPSE</div>
+          <div className="al-brand-dim">THE HOUSE</div>
+          <div className="al-brand-lit">THE HOUSE</div>
         </div>
 
         <p className="al-eyebrow">Admin Access</p>
@@ -75,7 +75,7 @@ function LoginForm() {
           <span className="al-submit-bg" />
         </button>
 
-        <p className="al-hint">Eclipse Bar · Tel Aviv</p>
+        <p className="al-hint">The House Bar · Tel Aviv</p>
       </form>
 
       <style>{`

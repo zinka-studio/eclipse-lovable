@@ -81,7 +81,7 @@ export default function Concept() {
           </h2>
         </div>
         <p className="concept-body reveal" data-d="1">
-          Eclipse isn&apos;t just a bar — it&apos;s a celestial shift. Located in the hidden pulse of Tel Aviv, we&apos;ve stripped away the noise to focus on the essential. Black walls, white light, and the vivid spectrum of the world&apos;s finest spirits.
+          The House isn&apos;t just a bar — it&apos;s a celestial shift. Located in the hidden pulse of Tel Aviv, we&apos;ve stripped away the noise to focus on the essential. Black walls, white light, and the vivid spectrum of the world&apos;s finest spirits.
         </p>
       </div>
     </section>
