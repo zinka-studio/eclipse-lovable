@@ -1,4 +1,4 @@
-export { supabase } from '@/integrations/supabase/client'
+export { supabase } from '../src/integrations/supabase/client'
 
 export type SiteContent = {
   id: string
