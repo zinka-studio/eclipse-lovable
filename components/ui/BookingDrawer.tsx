@@ -60,6 +60,12 @@ export default function BookingDrawer({ open, onClose }: BookingDrawerProps) {
 
     setStatus('loading');
 
+    if (!supabase) {
+      setStatus('error');
+      setErrorMsg('Reservations are temporarily unavailable. Please call us directly.');
+      return;
+    }
+
     const { error } = await supabase.from('reservations').insert({
       full_name: parsed.data.full_name,
       email: parsed.data.email,
